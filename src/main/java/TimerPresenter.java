@@ -12,11 +12,11 @@ import java.util.concurrent.TimeUnit;
  * Timer presenter
  */
 public class TimerPresenter implements TimerContract.ITimerPresenter {
-    int initialMinutes;
-    Subscription subscription;
-    TimerContract.ITimerView timerView;
-    long currentTime = -1;
-    long totalSeconds;
+    private int initialMinutes;
+    private Subscription subscription;
+    private  TimerContract.ITimerView timerView;
+    private long currentTime = -1;
+    private long totalSeconds;
 
     TimerPresenter(int initialMinutes, TimerContract.ITimerView timerView) {
         this.initialMinutes = initialMinutes;
@@ -57,6 +57,16 @@ public class TimerPresenter implements TimerContract.ITimerPresenter {
         long currentSeconds = seconds % 60;
         long currentMinutes = seconds / 60;
         return String.format("%02d:%02d", currentMinutes, currentSeconds);
+    }
+
+    public void resetTimer(int time) {
+        if (subscription != null && !subscription.isUnsubscribed()) {
+            subscription.unsubscribe();
+        }
+        initialMinutes = time;
+        totalSeconds = initialMinutes * 60;
+        currentTime = -1;
+        timerView.updateTime(formatTime(totalSeconds));
     }
 
     public void pauseTimer() {
